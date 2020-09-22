@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<server description="Client Open Liberty server">
+	<featureManager>
+		<feature>jaxrs-2.1</feature>
+		<feature>jpa-2.2</feature>
+		<feature>jsonp-1.1</feature>
+		<feature>cdi-2.0</feature>
+		<feature>mpMetrics-2.3</feature>
+		<feature>mpHealth-2.2</feature>
+		<feature>mpConfig-1.4</feature>
+		<feature>jdbc-4.2</feature>
+		<feature>jndi-1.0</feature>
+		<feature>sessionCache-1.0</feature>
+		<feature>mpOpenAPI-1.1</feature>
+	</featureManager>
+
+	<variable name="io_openliberty_app_inMaintenance" defaultValue="false" />
+	<webApplication location="client-service.war" contextRoot="/" />
+	<variable name="postgres.lib" defaultValue="${shared.resource.dir}/postgresql-42.2.2.jar" />
+	<variable name="hazelcast.lib" defaultValue="${shared.resource.dir}/hazelcast-3.12.6.jar" />
+
+	<httpEndpoint host="*" httpPort="${HTTP_default_port}" httpsPort="${HTTPS_default_port}" id="defaultHttpEndpoint" />
+	<httpSessionCache libraryRef="jCacheVendorLib" uri="file:${server.config.dir}/hazelcast-config.xml" />
+    <library id="jCacheVendorLib">
+        <file name="${hazelcast.lib}" />
+    </library>
+	<library id="PostgresLib">
+		<file name="${postgres.lib}" />
+	</library>
+
+	<dataSource id="jpadatasource" jndiName="jdbc/jpadatasource"
+		 transactional="true">
+		<jdbcDriver libraryRef="PostgresLib" 			
+			javax.sql.ConnectionPoolDataSource="org.postgresql.ds.PGConnectionPoolDataSource" /> 
+		<properties.postgresql serverName="${database_server}" portNumber="${database_port}" databaseName="${database_name}" 
+			user="${database_user}" password="${database_password}" /> 
+	</dataSource> 
+</server>
